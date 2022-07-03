@@ -34,4 +34,9 @@ public class Cliente extends BaseModel<Long> {
         this.telefone = telefone;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "Cliente [email=" + email + ", id=" + id + ", nome=" + nome + ", telefone=" + telefone + "]";
+    }
 }

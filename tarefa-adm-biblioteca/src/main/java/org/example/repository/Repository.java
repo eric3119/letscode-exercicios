@@ -2,11 +2,13 @@ package org.example.repository;
 
 import java.util.List;
 
-public interface Repository<T> {
+import org.example.model.BaseModel;
+
+public interface Repository<T extends BaseModel<ID>, ID> {
     void add(T entity);
     void remove(T entity);
     void update(T entity);
-    List findById();
-
-    //List query(Specification specification);
+    List<T> getAll();
+    T findById(ID id);
+    // List<T> query(Criteria specification);
 }
