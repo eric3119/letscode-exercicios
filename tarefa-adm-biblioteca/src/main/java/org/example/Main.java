@@ -48,8 +48,12 @@ public class Main {
 
         // realizarEmprestimoService.realizarEmprestimo(c1, List.of(l1, l2));
         realizarEmprestimoService.realizarEmprestimo(c1, List.of(l3));
+        System.out.println("---------------------------------------");
         emprestimoService.relatorioEmprestimos();
+        System.out.println("---------------------------------------");
         emprestimoService.devolverLivros(c1, List.of(l1, l3));
+        System.out.println("---------------------------------------");
         emprestimoService.relatorioEmprestimos();
+        System.out.println("---------------------------------------");
     }
 }

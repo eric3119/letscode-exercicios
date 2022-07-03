@@ -46,8 +46,8 @@ public class Emprestimo extends BaseModel<Long> {
 
     @Override
     public String toString() {
-        return "Emprestimo [cliente=" + cliente + ", dataDevolucao=" + dataDevolucao + ", dataEmprestimo="
-                + dataEmprestimo + ", livro=" + livro + "]";
+        return "\n\tEmprestimo [\n\t\tcliente=" + cliente + ", \n\t\tdataDevolucao=" + dataDevolucao + ", \n\t\tdataEmprestimo="
+                + dataEmprestimo + ", \n\t\tlivro=" + livro + "]";
     }
     
 }

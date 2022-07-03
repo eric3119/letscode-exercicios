@@ -4,6 +4,7 @@ import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.example.model.Cliente;
 import org.example.model.Emprestimo;
@@ -30,7 +31,7 @@ public class EmprestimoService {
         List<Emprestimo> emprestimosPendentes = this.emprestimoRepository.filterDevolucaoPendente(cliente);
         final CalcularMultaService calcularMultaService = new CalcularMultaService(List.of(new CalcularMultaAtraso()));
 
-        System.out.printf("Valor de multas do cliente: R$ %s\n",
+        System.out.printf("Valor de multas do cliente: %s\n",
                 NumberFormat.getCurrencyInstance().format(calcularMultaService.calcularMultas(cliente)));
 
         for (Emprestimo emprestimo : emprestimosPendentes) {
@@ -43,6 +44,9 @@ public class EmprestimoService {
     }
 
     public void relatorioEmprestimos() {
-        System.out.println(this.emprestimoRepository.getAll());
+        System.out.println("Listagem de emprestimos pendentes");
+        System.out.println(this.emprestimoRepository.getAll().stream()
+                .filter(emprestimo -> emprestimo.getDataDevolucao() == null)
+                .collect(Collectors.toList()));
     }
 }
