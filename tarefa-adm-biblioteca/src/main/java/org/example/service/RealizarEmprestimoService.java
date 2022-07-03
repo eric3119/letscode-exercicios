@@ -1,6 +1,7 @@
 package org.example.service;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.List;
 
@@ -10,6 +11,8 @@ import org.example.model.Livro;
 import org.example.repository.EmprestimoRepository;
 
 public class RealizarEmprestimoService {
+
+    private final Integer QTD_DIAS_ATRASO_BLOQUEIO = 30;
 
     private EmprestimoRepository emprestimoRepository;
     private static RealizarEmprestimoService instance;
@@ -29,12 +32,9 @@ public class RealizarEmprestimoService {
     }
 
     public void realizarEmprestimo(Cliente cliente, Collection<Livro> livros) {
-        final List<Emprestimo> emprestimosPendentes = this.emprestimoRepository.filterDevolucaoPendente(cliente);
 
-        if (emprestimosPendentes.size() + livros.size() > 2)
-            throw new RuntimeException(
-                    String.format("Quantidade máxima de livros emprestados atingida: Excedeu %d livro(s)",
-                            (emprestimosPendentes.size() + livros.size()) - 2));
+        this.validarUsuarioComEmprestimosPendentes(cliente, livros);
+        this.validarUsuarioComBloqueio(cliente);
 
         livros.forEach(livro -> {
             final Emprestimo novoEmprestimo = new Emprestimo()
@@ -50,5 +50,24 @@ public class RealizarEmprestimoService {
         });
 
         System.out.println("Emprestimo realizado");
+    }
+
+    private void validarUsuarioComBloqueio(Cliente cliente) {
+        final List<Emprestimo> emprestimos = this.emprestimoRepository.filterDevolucaoComAtraso(cliente);
+        for (Emprestimo emprestimo : emprestimos) {
+            final Long dias = ChronoUnit.DAYS.between(emprestimo.getDataDevolucao(), LocalDateTime.now());
+            if (dias <= QTD_DIAS_ATRASO_BLOQUEIO)
+                throw new RuntimeException(
+                        String.format("Cliente com bloqueio. Dias restantes para o desbloqueio: %d", QTD_DIAS_ATRASO_BLOQUEIO - dias));
+        }
+    }
+
+    private void validarUsuarioComEmprestimosPendentes(Cliente cliente, Collection<Livro> livros) {
+        final List<Emprestimo> emprestimosPendentes = this.emprestimoRepository.filterDevolucaoPendente(cliente);
+
+        if (emprestimosPendentes.size() + livros.size() > 2)
+            throw new RuntimeException(
+                    String.format("Quantidade máxima de livros emprestados atingida: Excedeu %d livro(s)",
+                            (emprestimosPendentes.size() + livros.size()) - 2));
     }
 }

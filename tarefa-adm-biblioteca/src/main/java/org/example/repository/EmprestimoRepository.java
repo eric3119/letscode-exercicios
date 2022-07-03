@@ -1,5 +1,6 @@
 package org.example.repository;
 
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -62,6 +63,23 @@ public class EmprestimoRepository implements Repository<Emprestimo, Long> {
         return this.emprestimos.stream()
                 .filter(emprestimo -> Objects.equals(emprestimo.getCliente(), cliente))
                 .filter(emprestimo -> emprestimo.getDataDevolucao() == null)
+                .collect(Collectors.toList());
+    }
+
+    public List<Emprestimo> filterDevolucaoComAtraso(Cliente cliente) {
+        return this.emprestimos.stream()
+                .filter(emprestimo -> Objects.equals(emprestimo.getCliente(), cliente))
+                .filter(emprestimo -> {
+                    if (emprestimo.getDataDevolucao() != null) {
+                        final Long qtdDiasEmEmprestimo = ChronoUnit.DAYS.between(emprestimo.getDataEmprestimo(),
+                                emprestimo.getDataDevolucao());
+                        final Long qtdMaximaDeDiarias = emprestimo.getLivro().getMaximoDiarias();
+                        final Long qtdDeDiasDeAtraso = Math.max(0, qtdDiasEmEmprestimo - qtdMaximaDeDiarias);
+
+                        return qtdDeDiasDeAtraso > 0;
+                    }
+                    return false;
+                })
                 .collect(Collectors.toList());
     }
 }
