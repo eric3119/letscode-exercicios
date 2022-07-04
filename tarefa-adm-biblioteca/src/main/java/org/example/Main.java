@@ -6,7 +6,9 @@ import org.example.model.Livro;
 import org.example.repository.EmprestimoRepository;
 import org.example.service.DevolverEmprestimoService;
 import org.example.service.RealizarEmprestimoService;
-import org.example.service.ValidadorEmprestimoCliente;
+import org.example.service.ValidadorClienteBloqueado;
+import org.example.service.ValidadorEmprestimosCliente;
+import org.example.service.ValidadorEmprestimosQuantidadeMaxima;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -19,7 +21,8 @@ public class Main {
         private static DevolverEmprestimoService emprestimoService = DevolverEmprestimoService.getInstance();
         private static EmprestimoRepository emprestimoRepositoryTeste = EmprestimoRepository.getInstance();
         private static RealizarEmprestimoService realizarEmprestimoService = RealizarEmprestimoService.getInstance(
-                        List.of(new ValidadorEmprestimoCliente()));
+                        List.of(new ValidadorEmprestimosCliente(), new ValidadorEmprestimosQuantidadeMaxima()),
+                        List.of(new ValidadorClienteBloqueado()));
 
         private static Cliente c1 = new Cliente()
                         .setEmail("teste@teste.com")
@@ -49,6 +52,8 @@ public class Main {
                 System.out.println("---------------------------------------");
                 emprestimoService.relatorioEmprestimosPendentes();
                 System.out.println("---------------------------------------");
+                testeQuantidadeMaxima();
+                System.out.println("---------------------------------------");
                 testeUsuarioBloqueado();
                 System.out.println("---------------------------------------");
 
@@ -70,5 +75,20 @@ public class Main {
                 } catch (RuntimeException e) {
                         System.out.println(e.getMessage());
                 }
+
+                // Calcular multas
+                System.out.println("---------------------------------------");
+                emprestimoService.devolverLivros(c1, List.of(l3));
+        }
+       
+        private static void testeQuantidadeMaxima() {
+                try {
+                        realizarEmprestimoService.realizarEmprestimo(c1, List.of(l1, l2, l3));
+                } catch (RuntimeException e) {
+                        System.out.println(e.getMessage());
+                }
+                // Calcular multas
+                System.out.println("---------------------------------------");
+                emprestimoService.devolverLivros(c1, List.of(l3));
         }
 }

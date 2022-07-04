@@ -1,5 +1,7 @@
 package org.example.model;
 
+import java.util.Objects;
+
 public class Livro {
     private String titulo;
     private Double custoDiario;
@@ -30,6 +32,11 @@ public class Livro {
     public Livro setMaximoDiarias(Long maximoDiarias) {
         this.maximoDiarias = maximoDiarias;
         return this;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(titulo);
     }
 
     @Override

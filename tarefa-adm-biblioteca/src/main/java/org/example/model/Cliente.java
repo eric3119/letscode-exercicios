@@ -1,5 +1,7 @@
 package org.example.model;
 
+import java.util.Objects;
+
 public class Cliente extends BaseModel<Long> {
 
     @PrimaryKey
@@ -33,6 +35,11 @@ public class Cliente extends BaseModel<Long> {
     public Cliente setTelefone(String telefone) {
         this.telefone = telefone;
         return this;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nome, email, telefone);
     }
 
     @Override

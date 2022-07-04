@@ -1,8 +1,12 @@
 package org.example.model;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class Emprestimo extends BaseModel<Long> {
+
+    @PrimaryKey
+    private Long id;
     private Livro livro;
     private Cliente cliente;
     private LocalDateTime dataEmprestimo;
@@ -45,9 +49,15 @@ public class Emprestimo extends BaseModel<Long> {
     }
 
     @Override
+    public int hashCode() {
+        return Objects.hash(cliente, dataDevolucao, dataEmprestimo, livro);
+    }
+
+    @Override
     public String toString() {
-        return "\n\tEmprestimo [\n\t\tcliente=" + cliente + ", \n\t\tdataDevolucao=" + dataDevolucao + ", \n\t\tdataEmprestimo="
+        return "\n\tEmprestimo [\n\t\tcliente=" + cliente + ", \n\t\tdataDevolucao=" + dataDevolucao
+                + ", \n\t\tdataEmprestimo="
                 + dataEmprestimo + ", \n\t\tlivro=" + livro + "]";
     }
-    
+
 }

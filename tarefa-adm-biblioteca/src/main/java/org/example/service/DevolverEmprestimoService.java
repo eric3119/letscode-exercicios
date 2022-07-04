@@ -40,7 +40,11 @@ public class DevolverEmprestimoService {
                 this.emprestimoRepository.update(emprestimo);
             }
         }
-        System.out.println("Livros devolvidos");
+        System.out.println("Livros devolvidos: ");
+        for (Livro livro : livros) {
+            System.out.printf("\t");
+            System.out.println(livro);
+        }
     }
 
     public void relatorioEmprestimosPendentes() {
