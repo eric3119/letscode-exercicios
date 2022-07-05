@@ -47,9 +47,7 @@ class Solution {
         this.union(u, v);
       }
 
-      int scc = this.getScc();
-
-      return connections.length >= n - 1 ? scc : -1;
+      return this.getScc();
     }
   }
 
