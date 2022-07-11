@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 
 public class Main {
         private static DateTimeFormatter ptBRDateFormatter = DateTimeFormatter.ofPattern("dd/MM/uuuu");
@@ -16,11 +17,9 @@ public class Main {
                 for (int i = 0; i < qtdParcelas; i++) {
                         LocalDate vencimento = dataAtual.plusMonths(i);
 
-                        if (vencimento.getDayOfWeek() == DayOfWeek.SATURDAY)
-                                vencimento = vencimento.plusDays(2);
-
-                        if (vencimento.getDayOfWeek() == DayOfWeek.SUNDAY)
-                                vencimento = vencimento.plusDays(1);
+                        if (vencimento.getDayOfWeek() == DayOfWeek.SATURDAY
+                                        || vencimento.getDayOfWeek() == DayOfWeek.SUNDAY)
+                                vencimento = vencimento.with(TemporalAdjusters.next(DayOfWeek.MONDAY));
 
                         StringBuilder stringBuilder = new StringBuilder()
                                         .append("Parcela: ")
