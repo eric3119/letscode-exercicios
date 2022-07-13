@@ -1,6 +1,5 @@
 package org.example.interfaces;
 
-@FunctionalInterface
-public interface Verificador<T> {
-    boolean verificar(T entity);
-}
+import java.util.function.Predicate;
+
+public abstract class Verificador<T> implements Predicate<T> {}

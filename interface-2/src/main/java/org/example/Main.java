@@ -26,6 +26,6 @@ public class Main {
     }
 
     static List<Cliente> filtrar(List<Cliente> clientes, Verificador<Cliente> verificador) {
-        return clientes.stream().filter(verificador::verificar).collect(Collectors.toList());
+        return clientes.stream().filter(verificador).collect(Collectors.toList());
     }
 }
