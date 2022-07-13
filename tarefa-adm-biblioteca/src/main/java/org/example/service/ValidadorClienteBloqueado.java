@@ -5,6 +5,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.example.filters.EmprestimoComAtraso;
+import org.example.filters.EmprestimoPorCliente;
 import org.example.model.Cliente;
 import org.example.model.Emprestimo;
 import org.example.repository.EmprestimoRepository;
@@ -18,7 +19,8 @@ public class ValidadorClienteBloqueado implements ValidadorCliente {
     @Override
     public boolean validar(Cliente cliente) {
         final List<Emprestimo> emprestimos = this.emprestimoRepository
-                .queryFilteredByCliente(cliente, new EmprestimoComAtraso());
+                .query(new EmprestimoPorCliente(cliente)
+                        .and(new EmprestimoComAtraso()));
 
         for (Emprestimo emprestimo : emprestimos) {
             final Long dias = ChronoUnit.DAYS.between(emprestimo.getDataDevolucao(), LocalDateTime.now());

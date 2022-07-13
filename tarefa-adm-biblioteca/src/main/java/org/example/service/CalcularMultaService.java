@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.example.filters.EmprestimoPendente;
+import org.example.filters.EmprestimoPorCliente;
 import org.example.model.Cliente;
 import org.example.model.Emprestimo;
 import org.example.repository.EmprestimoRepository;
@@ -19,7 +20,9 @@ public class CalcularMultaService {
     public BigDecimal calcularMultas(Cliente cliente) {
         BigDecimal totalMultas = new BigDecimal(0);
         List<Emprestimo> emprestimos = this.emprestimoRepository
-                .queryFilteredByCliente(cliente, new EmprestimoPendente());
+                .query(
+                        new EmprestimoPorCliente(cliente).and(
+                                new EmprestimoPendente()));
 
         for (Emprestimo emprestimo : emprestimos) {
             for (CalcularMulta calcularMulta : calcularMultaList) {

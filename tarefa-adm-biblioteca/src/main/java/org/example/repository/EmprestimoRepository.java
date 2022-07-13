@@ -2,12 +2,10 @@ package org.example.repository;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.example.model.Cliente;
 import org.example.model.Emprestimo;
 
 public class EmprestimoRepository implements Repository<Emprestimo, Long> {
@@ -55,12 +53,5 @@ public class EmprestimoRepository implements Repository<Emprestimo, Long> {
     @Override
     public List<Emprestimo> query(Predicate<Emprestimo> specification) {
         return this.emprestimos.stream().filter(specification).collect(Collectors.toList());
-    }
-
-    public List<Emprestimo> queryFilteredByCliente(Cliente cliente, Predicate<Emprestimo> specification) {
-        return this.emprestimos.stream()
-                .filter((emprestimo) -> Objects.equals(emprestimo.getCliente(), cliente))
-                .filter(specification)
-                .collect(Collectors.toList());
     }
 }

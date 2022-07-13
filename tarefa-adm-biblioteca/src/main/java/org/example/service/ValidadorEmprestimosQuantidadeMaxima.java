@@ -3,6 +3,7 @@ package org.example.service;
 import java.util.List;
 
 import org.example.filters.EmprestimoPendente;
+import org.example.filters.EmprestimoPorCliente;
 import org.example.model.Cliente;
 import org.example.model.Emprestimo;
 import org.example.repository.EmprestimoRepository;
@@ -23,7 +24,8 @@ public class ValidadorEmprestimosQuantidadeMaxima implements ValidadorEmprestimo
             return;
 
         final List<Emprestimo> emprestimosPendentes = this.emprestimoRepository
-                .queryFilteredByCliente(cliente, new EmprestimoPendente());
+                .query(new EmprestimoPorCliente(cliente)
+                        .and(new EmprestimoPendente()));
 
         if (emprestimosPendentes.size() + emprestimos.size() > QUANTIDADE_MAXIMA_PERMITIDA)
             throw new RuntimeException(
