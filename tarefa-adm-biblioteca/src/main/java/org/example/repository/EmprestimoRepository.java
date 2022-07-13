@@ -1,11 +1,10 @@
 package org.example.repository;
 
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.example.model.Cliente;
@@ -41,7 +40,7 @@ public class EmprestimoRepository implements Repository<Emprestimo, Long> {
 
     @Override
     public List<Emprestimo> getAll() {
-        final List<Emprestimo> cloneEmprestimos = new ArrayList<>(this.emprestimos);
+        final List<Emprestimo> cloneEmprestimos = List.copyOf(this.emprestimos);
         return cloneEmprestimos;
     }
 
@@ -53,33 +52,15 @@ public class EmprestimoRepository implements Repository<Emprestimo, Long> {
                 .orElseThrow();
     }
 
-    public List<Emprestimo> findByCliente(Cliente cliente) {
-        return this.emprestimos.stream()
-                .filter(emprestimo -> Objects.equals(emprestimo.getCliente(), cliente))
-                .collect(Collectors.toList());
+    @Override
+    public List<Emprestimo> query(Predicate<Emprestimo> specification) {
+        return this.emprestimos.stream().filter(specification).collect(Collectors.toList());
     }
 
-    public List<Emprestimo> filterDevolucaoPendente(Cliente cliente) {
+    public List<Emprestimo> queryFilteredByCliente(Cliente cliente, Predicate<Emprestimo> specification) {
         return this.emprestimos.stream()
-                .filter(emprestimo -> Objects.equals(emprestimo.getCliente(), cliente))
-                .filter(emprestimo -> emprestimo.getDataDevolucao() == null)
-                .collect(Collectors.toList());
-    }
-
-    public List<Emprestimo> filterDevolucaoComAtraso(Cliente cliente) {
-        return this.emprestimos.stream()
-                .filter(emprestimo -> Objects.equals(emprestimo.getCliente(), cliente))
-                .filter(emprestimo -> {
-                    if (emprestimo.getDataDevolucao() != null) {
-                        final Long qtdDiasEmEmprestimo = ChronoUnit.DAYS.between(emprestimo.getDataEmprestimo(),
-                                emprestimo.getDataDevolucao());
-                        final Long qtdMaximaDeDiarias = emprestimo.getLivro().getMaximoDiarias();
-                        final Long qtdDeDiasDeAtraso = Math.max(0, qtdDiasEmEmprestimo - qtdMaximaDeDiarias);
-
-                        return qtdDeDiasDeAtraso > 0;
-                    }
-                    return false;
-                })
+                .filter((emprestimo) -> Objects.equals(emprestimo.getCliente(), cliente))
+                .filter(specification)
                 .collect(Collectors.toList());
     }
 }
