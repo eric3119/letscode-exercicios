@@ -6,8 +6,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.example.filters.EmprestimoPendente;
-import org.example.filters.EmprestimoPorCliente;
+import org.example.filters.EmprestimoPendenteFilter;
+import org.example.filters.EmprestimoPorClienteFilter;
 import org.example.model.Cliente;
 import org.example.model.Emprestimo;
 import org.example.model.Livro;
@@ -31,8 +31,8 @@ public class DevolverEmprestimoService {
 
     public void devolverLivros(Cliente cliente, Collection<Livro> livros) {
         List<Emprestimo> emprestimosPendentes = this.emprestimoRepository
-                .query(new EmprestimoPorCliente(cliente)
-                        .and(new EmprestimoPendente()));
+                .query(new EmprestimoPorClienteFilter(cliente)
+                        .and(new EmprestimoPendenteFilter()));
         final CalcularMultaService calcularMultaService = new CalcularMultaService(List.of(new CalcularMultaAtraso()));
 
         System.out.printf("Valor de multas do cliente: %s\n",

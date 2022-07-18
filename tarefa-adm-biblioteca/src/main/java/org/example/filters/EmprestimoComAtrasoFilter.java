@@ -5,7 +5,7 @@ import java.util.function.Predicate;
 
 import org.example.model.Emprestimo;
 
-public class EmprestimoComAtraso implements Predicate<Emprestimo> {
+public class EmprestimoComAtrasoFilter implements Predicate<Emprestimo> {
 
     @Override
     public boolean test(Emprestimo emprestimo) {

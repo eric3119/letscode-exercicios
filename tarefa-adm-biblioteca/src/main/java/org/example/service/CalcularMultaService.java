@@ -3,8 +3,8 @@ package org.example.service;
 import java.math.BigDecimal;
 import java.util.List;
 
-import org.example.filters.EmprestimoPendente;
-import org.example.filters.EmprestimoPorCliente;
+import org.example.filters.EmprestimoPendenteFilter;
+import org.example.filters.EmprestimoPorClienteFilter;
 import org.example.model.Cliente;
 import org.example.model.Emprestimo;
 import org.example.repository.EmprestimoRepository;
@@ -21,8 +21,8 @@ public class CalcularMultaService {
         BigDecimal totalMultas = new BigDecimal(0);
         List<Emprestimo> emprestimos = this.emprestimoRepository
                 .query(
-                        new EmprestimoPorCliente(cliente).and(
-                                new EmprestimoPendente()));
+                        new EmprestimoPorClienteFilter(cliente).and(
+                                new EmprestimoPendenteFilter()));
 
         for (Emprestimo emprestimo : emprestimos) {
             for (CalcularMulta calcularMulta : calcularMultaList) {

@@ -6,11 +6,11 @@ import java.util.function.Predicate;
 import org.example.model.Cliente;
 import org.example.model.Emprestimo;
 
-public class EmprestimoPorCliente implements Predicate<Emprestimo> {
+public class EmprestimoPorClienteFilter implements Predicate<Emprestimo> {
 
     private Cliente cliente;
 
-    public EmprestimoPorCliente(Cliente cliente) {
+    public EmprestimoPorClienteFilter(Cliente cliente) {
         this.cliente = cliente;
     }
 
