@@ -16,24 +16,25 @@ public class Main {
         List<String> nomes = List.of(
                 "Eric dos Santos Coelho",
                 "Eric Coelho",
-                "Nome Inválido i");
+                "Nome Inválido",
+                "Nome t");
 
         String regexNome = "[a-zA-Z]{2,}";
-        String specialChar = "[^a-zA-Z ]";
-        String regexNomeCompleto = "(" + regexNome + "\\s+)*" + regexNome;
+
+        String inicioNome = "(^" + regexNome + "\\s+)";
+        String nomesIntermediarios = "(" + regexNome + "\\s+)*";
+        String finalNome = regexNome + "$";
+
+        String regexNomeCompleto = inicioNome + nomesIntermediarios + finalNome;
 
         Pattern patternNomeCompleto = Pattern.compile(regexNomeCompleto);
-        Pattern patternSpecialChar = Pattern.compile(specialChar);
 
         for (String nome : nomes) {
             boolean matchFound = false;
-            boolean hasSpecialChar = patternSpecialChar.matcher(nome).find();
-            
-            if (!hasSpecialChar) {
-                Matcher matcher = patternNomeCompleto.matcher(nome);
-                matchFound = matcher.find();
-            }
-            
+
+            Matcher matcher = patternNomeCompleto.matcher(nome);
+            matchFound = matcher.find();
+
             System.out.print(nome);
             System.out.println(matchFound ? " OK" : " Incorreto");
         }
