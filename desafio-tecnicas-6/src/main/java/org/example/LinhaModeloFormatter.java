@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ModeloFormatter {
+public class LinhaModeloFormatter {
     String input;
     List<String> valores;
 
-    ModeloFormatter(){}
+    LinhaModeloFormatter(){}
 
-    ModeloFormatter(String input, List<String> valores) {
+    LinhaModeloFormatter(String input, List<String> valores) {
         this.input = input;
         this.valores = valores;
     }
@@ -25,7 +25,7 @@ public class ModeloFormatter {
         return String.format(res, valores.toArray());
     }
 
-    public ModeloFormatter setLinha(String linha) {
+    public LinhaModeloFormatter setLinha(String linha) {
         input = linha;
         Pattern pattern = Pattern.compile("<%\\s*(\\w+)\\s*%>");
         List<String> variaveisParaSubstituir = new ArrayList<>();

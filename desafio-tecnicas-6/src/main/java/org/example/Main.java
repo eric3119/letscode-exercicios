@@ -3,6 +3,9 @@ package org.example;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Uma produção agrícola precisa gerar periodicamente relatórios.
@@ -24,8 +27,14 @@ public class Main {
     public static void main(String[] args) {
 
         initVariaveis();
-        printModelo();
+        List<LinhaModeloFormatter> linhaModeloFormatterList = getLinhaModeloFormatter();
+        String textoFormatado = getTextoFormatado(linhaModeloFormatterList);
 
+        Path destRelatorio = Paths
+                .get("./desafio-tecnicas-6/src/main/java/org/example/relatorio-" + ModeloVariaveis.get("mes") + ".txt");
+        salvaRelatorio(destRelatorio, textoFormatado);
+
+        printRelatorio(textoFormatado);
     }
 
     private static void initVariaveis() {
@@ -38,11 +47,33 @@ public class Main {
 
     }
 
-    private static void printModelo() {
+    private static List<LinhaModeloFormatter> getLinhaModeloFormatter() {
         try {
-            Files.readAllLines(modeloPath).stream().map(linha -> {
-                return new ModeloFormatter().setLinha(linha);
-            }).forEach(System.out::println);
+            return Files.readAllLines(modeloPath).stream().map(linha -> {
+                return new LinhaModeloFormatter().setLinha(linha);
+            }).collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static String getTextoFormatado(List<LinhaModeloFormatter> linhaModeloFormatterList) {
+        return linhaModeloFormatterList.stream()
+                .reduce(
+                        new StringBuilder(),
+                        (partial, modeloFormatter) -> partial
+                                .append(modeloFormatter.getLinhaFormatada() + System.lineSeparator()),
+                        (acc1, acc2) -> acc1.append(acc2))
+                .toString();
+    }
+
+    private static void printRelatorio(String textoFormatado) {
+        System.out.println(textoFormatado);
+    }
+
+    private static void salvaRelatorio(Path path, String textoFormatado) {
+        try {
+            Files.write(path, textoFormatado.toString().getBytes());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
