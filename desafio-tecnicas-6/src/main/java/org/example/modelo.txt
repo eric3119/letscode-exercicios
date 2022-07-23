@@ -1,0 +1,9 @@
+Relatório Mensal <% mes %>/<% ano %>
+
+Neste mês de <%mes%> do ano <%ano%> a produção acumulada até o momento é de:
+
+- <% tomate %> toneladas de TOMATES
+- <% melao %> toneladas de MELÃO
+- <% laranja %> toneladas de LARANJA
+
+A taxa média de desperdício foi de <%desperdicio%>%.
