@@ -10,7 +10,11 @@ public class ModeloVariaveis {
         String variavel = linha.split("=")[0].trim();
         String valor = linha.split("=")[1].trim();
 
-        variaveis.put(variavel, valor);
+        addVariavel(variavel, valor);
+    }
+
+    public static void addVariavel(String key, String value) {
+        variaveis.put(key, value);
     }
 
     public static String get(String key){

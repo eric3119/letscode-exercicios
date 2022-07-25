@@ -3,8 +3,11 @@ package org.example;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.TextStyle;
+import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 /**
@@ -25,13 +28,16 @@ public class Main {
     private static Path modeloPath = Path.of("./desafio-tecnicas-6/src/main/java/org/example/modelo.txt");
 
     public static void main(String[] args) {
+        final LocalDate hoje = LocalDate.now();
 
         initVariaveis();
         List<LinhaModeloFormatter> linhaModeloFormatterList = getLinhaModeloFormatter();
         String textoFormatado = getTextoFormatado(linhaModeloFormatterList);
+        ModeloVariaveis.addVariavel("mes", hoje.getMonth().getDisplayName(TextStyle.FULL, new Locale("pt", "BR")));
+        ModeloVariaveis.addVariavel("ano", String.valueOf(hoje.getYear()));
 
-        Path destRelatorio = Paths
-                .get("./desafio-tecnicas-6/src/main/java/org/example/relatorio-" + ModeloVariaveis.get("mes") + ".txt");
+        Path destRelatorio = Path
+                .of("./desafio-tecnicas-6/src/main/java/org/example/relatorio-" + ModeloVariaveis.get("mes") + ".txt");
         salvaRelatorio(destRelatorio, textoFormatado);
 
         printRelatorio(textoFormatado);
@@ -73,7 +79,7 @@ public class Main {
 
     private static void salvaRelatorio(Path path, String textoFormatado) {
         try {
-            Files.write(path, textoFormatado.toString().getBytes());
+            Files.write(path, Collections.singleton(textoFormatado.toString()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
