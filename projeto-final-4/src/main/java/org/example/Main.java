@@ -23,11 +23,13 @@ public class Main {
 
         filmes = getFilmes(movies1Path);
 
-        filmes.filter(new FilmesGeneroHorrorFilter().getQuery()).forEach(filme -> System.out.println(filme.getGenre()));
+        filmes.filter(new FilmesGeneroHorrorFilter().getQuery()).forEach(filme -> {
+            //System.out.println(filme.getGenre())
+        });
     }
 
     private static Stream<Filme> getFilmes(Path path) {
-        Pattern pattern = Pattern.compile("(\"[^\"]*\"|[^,]*),?");
+        Pattern pattern = Pattern.compile("(?<=^|,)(\"(?:[^\"]|\"\")*\"|[^,]*)");
         try {
             return Files.lines(path).skip(1)
                     .map(linha -> {
@@ -35,6 +37,9 @@ public class Main {
                         Matcher matcher = pattern.matcher(linha);
                         while (matcher.find()) {
                             cols.add(matcher.group(1));
+                        }
+                        if(cols.size() != 12){
+                            System.out.print(linha);
                         }
                         return Filme.of(cols);
                     })
