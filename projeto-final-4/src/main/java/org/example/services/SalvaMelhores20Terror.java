@@ -7,6 +7,7 @@ import org.example.models.Filme;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,7 +34,8 @@ public class SalvaMelhores20Terror implements Runnable {
                 .collect(Collectors.toList());
 
         try {
-            Files.write(Path.of("melhores-20-terror.csv"), ParseFilmeToCSV.apply(filmes));
+            String filmesCSV = filmes.stream().map(FilmeToCSVMapper::apply).collect(Collectors.joining(System.lineSeparator()));
+            Files.write(Path.of("melhores-20-terror.csv"), Collections.singleton(filmesCSV));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

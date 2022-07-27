@@ -9,7 +9,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Timer;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -36,7 +35,7 @@ public class Main {
         ExecutorService executorServiceCarregar = Executors.newCachedThreadPool();
 
         Set<Filme> filmes = Stream.of(
-            executorServiceCarregar.submit(new CarregaFilmes(movies1Path, 1)),
+            executorServiceCarregar.submit(new CarregaFilmes(movies1Path)),
             executorServiceCarregar.submit(new CarregaFilmes(movies2Path)),
             executorServiceCarregar.submit(new CarregaFilmes(movies3Path))
         ).flatMap(
@@ -47,27 +46,16 @@ public class Main {
                         throw new RuntimeException(e);
                     }
                 }
-        ).collect(Collectors.toSet());
+        ).skip(1).collect(Collectors.toSet());
 
         executorServiceCarregar.shutdown();
 
         ExecutorService executorServiceSalvar = Executors.newCachedThreadPool();
 
         executorServiceSalvar.execute(new SalvaMelhores20Terror(filmes));
-        Set<String> anos = filmes.stream()
-            .reduce(
-                new HashSet<>(),
-                (a,b) -> {
-                    a.add(b.getYear());
-                    return a;
-                },
-                (a,b) -> {
-                    a.addAll(b);
-                    return a;
-                }
-            );
 
-        anos.forEach(ano -> executorServiceSalvar.execute(new SalvaMelhores50PorAno(filmes, Integer.parseInt(ano))));
+        filmes.stream().map(Filme::getYear).distinct()
+                .forEach(ano -> executorServiceSalvar.execute(new SalvaMelhores50PorAno(filmes, Integer.parseInt(ano))));
 
         executorServiceSalvar.shutdown();
 
@@ -93,5 +81,4 @@ public class Main {
             throw new RuntimeException(e);
         }
     }
-
 }

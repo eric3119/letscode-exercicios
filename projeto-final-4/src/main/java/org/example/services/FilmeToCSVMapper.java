@@ -2,16 +2,11 @@ package org.example.services;
 
 import org.example.models.Filme;
 
-import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+public final class FilmeToCSVMapper {
 
-public final class ParseFilmeToCSV {
-
-    public static List<String> apply(List<Filme> filmes) {
+    public static String apply(Filme filme) {
 //        Rank,Title,Genre,Description,Director,Actors,Year,Runtime (Minutes),Rating,Votes,Revenue (Millions),Metascore
-        return filmes.stream().map(
-                filme -> new StringBuilder()
+        return new StringBuilder()
                         .append(filme.getRank())
                         .append(",")
                         .append(filme.getTitle())
@@ -35,7 +30,6 @@ public final class ParseFilmeToCSV {
                         .append(filme.getRevenue())
                         .append(",")
                         .append(filme.getMetascore())
-                        .toString()
-        ).collect(Collectors.toList());
+                        .toString();
     }
 }

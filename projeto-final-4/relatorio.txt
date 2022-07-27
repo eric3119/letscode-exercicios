@@ -1,4 +1,4 @@
-Incio processamento: 27/07/2022 15:18:14.219
-Fim processamento: 27/07/2022 15:18:14.365
-Tempo em milisegundos: 145 milisegundos
+Incio processamento: 27/07/2022 16:18:58.118
+Fim processamento: 27/07/2022 16:18:58.282
+Tempo em milisegundos: 163 milisegundos
 Tempo em segundos: 0 segundos
