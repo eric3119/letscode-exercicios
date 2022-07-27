@@ -1,4 +1,4 @@
-package org.example;
+package org.example.models;
 
 import java.util.List;
 
@@ -16,7 +16,21 @@ public class Filme {
     private String revenue;
     private String metascore;
 
-    static Filme of(List<String> dados) {
+    @Override
+    public int hashCode() {
+        return this.getTitle().hashCode() + this.getDirector().hashCode() + this.getYear().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(!(obj instanceof Filme)) return false;
+        Filme f = (Filme) obj;
+        return f.getTitle().compareTo(this.getTitle()) == 0 &&
+                f.getDirector().compareTo(this.getDirector()) == 0 &&
+                f.getYear().compareTo(this.getYear()) == 0;
+    }
+
+    public static Filme of(List<String> dados) {
         return new Filme()
                 .setRank(dados.get(0))
                 .setTitle(dados.get(1))

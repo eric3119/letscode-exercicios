@@ -3,48 +3,93 @@ package org.example;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Timer;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.example.filters.FilmesGeneroHorrorFilter;
+import org.example.models.Filme;
+import org.example.services.CarregaFilmes;
+import org.example.services.SalvaMelhores20Terror;
+import org.example.services.SalvaMelhores50PorAno;
 
 public class Main {
 
-    private static Path movies1Path = Path.of("./projeto-final-4/src/main/java/org/example/movies1.csv");
-    private static Path movies2Path = Path.of("./projeto-final-4/src/main/java/org/example/movies2.csv");
-    private static Path movies3Path = Path.of("./projeto-final-4/src/main/java/org/example/movies3.csv");
+    private static final Path movies1Path = Path.of("./src/main/java/org/example/movies1.csv");
+    private static final Path movies2Path = Path.of("./src/main/java/org/example/movies2.csv");
+    private static final Path movies3Path = Path.of("./src/main/java/org/example/movies3.csv");
+
+    private static final DateTimeFormatter ptbr = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS");
 
     public static void main(String[] args) {
-        Stream<Filme> filmes;
+        LocalDateTime inicio = LocalDateTime.now();
 
-        filmes = getFilmes(movies1Path);
+        ExecutorService executorServiceCarregar = Executors.newCachedThreadPool();
 
-        filmes.filter(new FilmesGeneroHorrorFilter().getQuery()).forEach(filme -> {
-            //System.out.println(filme.getGenre())
-        });
-    }
+        Set<Filme> filmes = Stream.of(
+            executorServiceCarregar.submit(new CarregaFilmes(movies1Path, 1)),
+            executorServiceCarregar.submit(new CarregaFilmes(movies2Path)),
+            executorServiceCarregar.submit(new CarregaFilmes(movies3Path))
+        ).flatMap(
+                filmesStream -> {
+                    try {
+                        return filmesStream.get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+        ).collect(Collectors.toSet());
 
-    private static Stream<Filme> getFilmes(Path path) {
-        Pattern pattern = Pattern.compile("(?<=^|,)(\"(?:[^\"]|\"\")*\"|[^,]*)");
+        executorServiceCarregar.shutdown();
+
+        ExecutorService executorServiceSalvar = Executors.newCachedThreadPool();
+
+        executorServiceSalvar.execute(new SalvaMelhores20Terror(filmes));
+        Set<String> anos = filmes.stream()
+            .reduce(
+                new HashSet<>(),
+                (a,b) -> {
+                    a.add(b.getYear());
+                    return a;
+                },
+                (a,b) -> {
+                    a.addAll(b);
+                    return a;
+                }
+            );
+
+        anos.forEach(ano -> executorServiceSalvar.execute(new SalvaMelhores50PorAno(filmes, Integer.parseInt(ano))));
+
+        executorServiceSalvar.shutdown();
+
         try {
-            return Files.lines(path).skip(1)
-                    .map(linha -> {
-                        List<String> cols = new ArrayList<>();
-                        Matcher matcher = pattern.matcher(linha);
-                        while (matcher.find()) {
-                            cols.add(matcher.group(1));
-                        }
-                        if(cols.size() != 12){
-                            System.out.print(linha);
-                        }
-                        return Filme.of(cols);
-                    })
-                    .sorted((filme1, filme2) -> filme2.getRating().compareTo(filme1.getRating()));
-        } catch (IOException e) {
+            if(executorServiceSalvar.awaitTermination(1000, TimeUnit.MILLISECONDS)){
+                LocalDateTime fim = LocalDateTime.now();
+                Files.write(Path.of("relatorio.txt"), Collections.singleton(new StringBuilder()
+                        .append("Incio processamento: ")
+                        .append(ptbr.format(inicio))
+                        .append("\n")
+                        .append("Fim processamento: ")
+                        .append(ptbr.format(fim))
+                        .append("\n")
+                        .append("Tempo em milisegundos: ")
+                        .append(ChronoUnit.MILLIS.between(inicio, fim))
+                        .append(" milisegundos\n")
+                        .append("Tempo em segundos: ")
+                        .append(ChronoUnit.SECONDS.between(inicio, fim))
+                        .append(" segundos")
+                        .toString()));
+            }
+        } catch (InterruptedException | IOException e) {
             throw new RuntimeException(e);
         }
     }

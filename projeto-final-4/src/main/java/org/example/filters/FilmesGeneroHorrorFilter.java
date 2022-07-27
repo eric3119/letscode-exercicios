@@ -6,13 +6,12 @@ package org.example.filters;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
-import org.example.Filme;
+import org.example.models.Filme;
 
-public class FilmesGeneroHorrorFilter implements FilmeFilter {
-    private static Pattern p =  Pattern.compile("Horror", Pattern.CASE_INSENSITIVE);
-
+public class FilmesGeneroHorrorFilter implements Predicate<Filme> {
+    private static final Pattern p =  Pattern.compile("Horror", Pattern.CASE_INSENSITIVE);
     @Override
-    public Predicate<Filme> getQuery() {
-        return (filme) -> p.matcher(filme.getGenre()).find();
+    public boolean test(Filme filme) {
+        return p.matcher(filme.getGenre()).find();
     }
 }
