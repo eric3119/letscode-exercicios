@@ -1,2 +1,1 @@
-insert into CLIENTE values (1, 'nome', 'telefone');
-
+INSERT INTO CLIENTE (nome, telefone) VALUES ('nome', 'telefone');

@@ -1,5 +1,6 @@
 package com.bbletscode.rotativo.controllers;
 
+import com.bbletscode.rotativo.dto.RotativoDTO;
 import com.bbletscode.rotativo.models.Rotativo;
 import com.bbletscode.rotativo.services.RotativoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,7 +28,7 @@ public class RotativoController {
 
     @Operation(description = "Registrar entrada de veículo")
     @PostMapping
-    public ResponseEntity<Rotativo> salvar(@RequestBody @Valid Rotativo rotativo){
+    public ResponseEntity<Rotativo> salvar(@RequestBody @Valid RotativoDTO rotativo){
         return ResponseEntity.ok(rotativoService.salvar(rotativo));
     }
 }
