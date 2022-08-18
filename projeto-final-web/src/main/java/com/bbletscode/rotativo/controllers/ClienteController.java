@@ -15,7 +15,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/clientes")
+@RequestMapping(path = "/api/clientes")
 public class ClienteController {
 
     @Autowired

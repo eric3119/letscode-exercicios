@@ -2,7 +2,6 @@ package com.bbletscode.rotativo.services;
 
 import com.bbletscode.rotativo.exceptions.ValidacaoException;
 import com.bbletscode.rotativo.models.Cliente;
-import com.bbletscode.rotativo.models.Veiculo;
 import com.bbletscode.rotativo.repositories.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +18,11 @@ public class ClienteService {
     }
 
     public Cliente salvar(Cliente cliente){
+        clienteRepository.findByNome(cliente.getNome()).stream().findAny().ifPresent(
+                (c) -> {
+                    throw new ValidacaoException("Cliente já cadastrado");
+                }
+        );
         return clienteRepository.save(cliente);
     }
 

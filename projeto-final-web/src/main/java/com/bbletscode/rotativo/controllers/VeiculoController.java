@@ -13,7 +13,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("veiculos")
+@RequestMapping(path = "/api/veiculos")
 public class VeiculoController {
     @Autowired
     private VeiculoService veiculoService;

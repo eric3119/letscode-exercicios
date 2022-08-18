@@ -31,4 +31,15 @@ public class RotativoDTO {
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     @Nullable
     private LocalDateTime saida;
+
+    @Override
+    public String toString() {
+        return "RotativoDTO{" +
+                "id=" + id +
+                ", id_veiculo=" + id_veiculo +
+                ", id_cliente=" + id_cliente +
+                ", entrada=" + entrada +
+                ", saida=" + saida +
+                '}';
+    }
 }

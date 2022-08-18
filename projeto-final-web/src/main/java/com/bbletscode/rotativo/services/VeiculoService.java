@@ -5,7 +5,6 @@ import com.bbletscode.rotativo.models.Veiculo;
 import com.bbletscode.rotativo.repositories.VeiculoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 
@@ -20,6 +19,11 @@ public class VeiculoService {
     }
 
     public Veiculo salvar(Veiculo veiculo){
+        veiculoRepository.findByPlaca(veiculo.getPlaca()).stream().findAny().ifPresent(
+                (c) -> {
+                    throw new ValidacaoException("Veículo já cadastrado");
+                }
+        );
         return veiculoRepository.save(veiculo);
     }
 
