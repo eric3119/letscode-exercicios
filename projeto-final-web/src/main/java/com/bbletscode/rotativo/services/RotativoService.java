@@ -9,6 +9,8 @@ import com.bbletscode.rotativo.models.Veiculo;
 import com.bbletscode.rotativo.repositories.RotativoRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +26,7 @@ public class RotativoService {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Cacheable(value = "rotativos")
     public List<Rotativo> findAll(Boolean estacionados) {
         List<Rotativo> result;
         if (estacionados != null) {
@@ -37,16 +40,14 @@ public class RotativoService {
 
         return result;
     }
+
+    @CacheEvict(value = "rotativos", allEntries = true)
     public Rotativo salvar(RotativoDTO rotativoDTO) {
-        Rotativo rotativo = modelMapper.map(rotativoDTO, Rotativo.class);
-
         Veiculo veiculoSalvo = veiculoService.findById(rotativoDTO.getId_veiculo());
-        Cliente clienteSalvo = clienteService.findById(rotativoDTO.getId_cliente());
+        Rotativo estacionado = rotativoRepository.findByVeiculoAndSaidaIsNull(veiculoSalvo);
+        if(estacionado != null) throw new ValidacaoException("Veículo já está estacionado");
 
-        rotativo.setVeiculo(veiculoSalvo);
-        rotativo.setCliente(clienteSalvo);
-
-        return rotativoRepository.save(rotativo);
+        return persistir(rotativoDTO);
     }
 
     public Rotativo saida(RotativoSaidaDTO rotativoSaidaDTO) {
@@ -60,6 +61,19 @@ public class RotativoService {
         rotativoDTO.setId_veiculo(entity.getVeiculo().getId());
 
         modelMapper.map(rotativoSaidaDTO, rotativoDTO);
-        return salvar(rotativoDTO);
+
+        return persistir(rotativoDTO);
+    }
+
+    private Rotativo persistir(RotativoDTO rotativoDTO) {
+        Rotativo rotativo = modelMapper.map(rotativoDTO, Rotativo.class);
+
+        Veiculo veiculoSalvo = veiculoService.findById(rotativoDTO.getId_veiculo());
+        Cliente clienteSalvo = clienteService.findById(rotativoDTO.getId_cliente());
+
+        rotativo.setVeiculo(veiculoSalvo);
+        rotativo.setCliente(clienteSalvo);
+
+        return rotativoRepository.save(rotativo);
     }
 }
